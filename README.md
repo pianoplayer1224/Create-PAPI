@@ -1,13 +1,15 @@
 # Create PAPI
 
-A working PAPI (Precision Approach Path Indicator) array for Minecraft **1.21.1** / **NeoForge**.
+A working **PAPI** (Precision Approach Path Indicator) array for Minecraft **1.21.1** / **NeoForge**.
 
 Units in a row show red or white depending on the **viewer's own** angle relative to a configurable
 glideslope, exactly as the real thing does: too low is all red, too high is all white, and two people
 looking from different heights at the same instant see different colours.
 
-Build it **four** units wide for a full PAPI, or **two** for an **APAPI** — the abbreviated version
+Build it **four** units wide for a full **PAPI**, or **two** for an **APAPI** — the abbreviated version
 installed on shorter runways.
+
+**Create is a required dependency**
 
 ---
 
