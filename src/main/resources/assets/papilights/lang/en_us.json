@@ -1,0 +1,13 @@
+{
+  "block.papilights.papi_light": "PAPI Light",
+  "gui.papilights.config.title.papi": "PAPI Array",
+  "gui.papilights.config.title.apapi": "APAPI Array",
+  "gui.papilights.config.glideslope": "Glideslope (°)",
+  "gui.papilights.config.spread": "Spread per unit (°)",
+  "gui.papilights.config.units": "Unit cut-off angles",
+  "gui.papilights.config.apply": "Apply",
+  "gui.papilights.config.reset": "Defaults",
+  "gui.papilights.config.hint1": "Unit 0 sits nearest the runway.",
+  "gui.papilights.config.hint2": "Enter applies, Esc cancels.",
+  "jei.papilights.info.papi_light": "Place four PAPI Lights in a row, all facing the same way, for a full PAPI. Place two instead for an APAPI — the abbreviated two-box version used on shorter runways. Runs of any other length stay dark.\n\nThe block faces the direction you place it from, which is the direction the beams aim — stand on the approach and place.\n\nEach client works out red or white from its own camera angle, so two pilots at different heights see different colours from the same array at the same moment.\n\nOn the configured path a PAPI reads two white nearest the runway and two red beyond; an APAPI reads one white and one red. Too low is all red, too high is all white.\n\nRight-click any unit to set the glideslope (default 3°) and the spacing between unit cut-off angles. An untouched array uses the real-world figure for its size: 0.3333° per unit for a PAPI (20 arcminutes), 0.5° for an APAPI (15 arcminutes either side of the path)."
+}

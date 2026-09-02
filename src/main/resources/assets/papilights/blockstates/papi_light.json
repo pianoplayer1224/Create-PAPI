@@ -1,0 +1,9 @@
+{
+  "_comment": "Single-bulb housing, centred in the block. FACING is the aim direction; the model is rotated so its axes stay aligned with the row (facing.getCounterClockWise()), matching the frame the renderer draws the bulb in.",
+  "variants": {
+    "facing=north": { "model": "papilights:block/papi_light", "y": 90 },
+    "facing=east":  { "model": "papilights:block/papi_light", "y": 180 },
+    "facing=south": { "model": "papilights:block/papi_light", "y": 270 },
+    "facing=west":  { "model": "papilights:block/papi_light" }
+  }
+}

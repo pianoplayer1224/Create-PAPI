@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+description = '''${mod_description}'''
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+# Required, not optional: the PAPI unit borrows Create's nixie tube model for its housing and calls
+# Create's NixieTubeRenderer to draw the glowing bulbs. Create's assets are not redistributable, so
+# they are referenced at runtime rather than copied into this jar.
+[[dependencies.${mod_id}]]
+modId = "create"
+type = "required"
+versionRange = "[6.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.0.0,)"
+ordering = "AFTER"
+side = "CLIENT"

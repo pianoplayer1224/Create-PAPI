@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "E": {
+      "item": "create:electron_tube"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "E",
+    "R"
+  ],
+  "result": {
+    "count": 1,
+    "id": "papilights:papi_light"
+  }
+}

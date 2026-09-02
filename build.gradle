@@ -1,0 +1,151 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.146'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = archives_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// ---------------------------------------------------------------------------
+// Compile/runtime dependencies on other mods.
+//
+// Create, Create Aeronautics, Sable, JEI, Sodium and Lithium are all consumed
+// straight out of the sibling `mods/` folder rather than from a maven. Since
+// 1.20.x, NeoForge ships production jars against official Mojang mappings, so a
+// distributed mod jar is directly usable as a compile-time dependency -- and
+// pinning the exact jars the user runs removes any chance of a version skew
+// between what we compile against and what loads at runtime.
+//
+// For reference, the upstream mavens are:
+//   JEI     -> https://maven.blamejared.com   (mezz.jei:jei-1.21.1-neoforge)
+//   Create  -> distributed via CurseForge/Modrinth for 1.21.1
+//   Sable / Create Aeronautics -> Modrinth only, no public maven
+// ---------------------------------------------------------------------------
+def modsDir = file('mods')
+def createJarFile = new File(modsDir, create_jar)
+def jeiJarFile = new File(modsDir, jei_jar)
+
+neoForge {
+    version = neo_version
+
+    runs {
+        configureEach {
+            gameDirectory = file('run')
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            // Give the dev client a little more headroom -- Create + Sable + the
+            // Aeronautics bundle is a heavy mod list.
+            jvmArgument '-Xmx4G'
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+            // Kept separate from the client run so a dedicated-server smoke test never touches
+            // the world you were just testing in.
+            gameDirectory = file('run-server')
+            programArgument '--nogui'
+        }
+        data {
+            clientData()
+        }
+    }
+
+    mods {
+        "$mod_id" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
+dependencies {
+    if (createJarFile.exists()) {
+        compileOnly files(createJarFile)
+    } else {
+        logger.warn("PAPI Lights: ${createJarFile} not found -- Nixie Tube rendering will not compile.")
+    }
+    if (jeiJarFile.exists()) {
+        compileOnly files(jeiJarFile)
+    }
+}
+
+// Ship every jar from `mods/` into the run directories so the dev runs boot with the full
+// target mod list (Create, Aeronautics, Sable, JEI, Sodium, Lithium).
+// Sodium ships a ModLauncher transformation service that probes the LWJGL version before FML
+// applies any side filtering, so it hard-crashes a dedicated server at bootstrap. It is a
+// client-only renderer; keep it out of the server's mods folder.
+def serverExcludedMods = ['sodium-*.jar']
+
+def registerModSync = { String taskName, String targetDir, List<String> excludes = [] ->
+    tasks.register(taskName, Sync) {
+        from(modsDir) {
+            include '*.jar'
+            excludes.each { exclude it }
+        }
+        into file(targetDir)
+        // Sync would otherwise delete anything else living alongside the jars.
+        preserve {
+            include '**/*'
+            exclude '*.jar'
+        }
+    }
+}
+registerModSync('copyRunMods', 'run/mods')
+registerModSync('copyServerRunMods', 'run-server/mods', serverExcludedMods)
+
+tasks.matching { it.name.startsWith('run') }.configureEach {
+    dependsOn(it.name == 'runServer' ? 'copyServerRunMods' : 'copyRunMods')
+}
+
+// Expand the mod metadata placeholders in neoforge.mods.toml / pack.mcmeta.
+def expandProps = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: '[1.21.1,1.22)',
+        neo_version            : neo_version,
+        neo_version_range      : "[${neo_version},)".toString(),
+        loader_version_range   : '[4,)',
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : mod_version,
+        mod_authors            : mod_authors,
+        mod_description        : mod_description
+]
+
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties expandProps
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
+        expand expandProps
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven { url = "file://${project.projectDir}/repo" }
+    }
+}

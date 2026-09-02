@@ -1,0 +1,20 @@
+# Gradle / build output
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Dev run directories
+run/
+run-server/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+eclipse/
+
+# Local maven publish target
+repo/
